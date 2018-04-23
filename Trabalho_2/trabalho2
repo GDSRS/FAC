@@ -8,8 +8,13 @@
 	
 
 #	jal CheckPrimeBruteForce
-	
+
+	move $a0,$t0
+	move $a1,$t2
 	jal Mode
+	move $t0,$v0
+	
+	
 	j EXIT
 	
 	
@@ -19,16 +24,16 @@
 	jr $ra
 	
 	Mode:
-	div $t0,$t2
-	mfhi $t0
+	div $a0,$a1
+	mfhi $v0
 	jr $ra
 	
-	CheckPrimeBruteForce:
+	CheckPrimeBruteForce: # https://gist.github.com/CarterA/1587394
 	li $t3,2
 	div $t2,$t3
 	mfhi $t4
 	jr $ra
-	
-	EXIT: #program exit
+		
+	EXIT: # program exit
 	
 #	(https://stackoverflow.com/questions/5281779/c-how-to-test-easily-if-it-is-prime-number)
