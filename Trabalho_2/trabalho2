@@ -1,0 +1,30 @@
+.text
+	jal ReadNumbers
+	move $t0,$v0
+	jal ReadNumbers
+	move $t1,$v0
+	jal ReadNumbers
+	move $t2,$v0
+	
+
+	jal CheckPrime
+	j EXIT
+	
+	
+	ReadNumbers:
+	li $v0,5
+	syscall
+	jr $ra
+	
+	Mode:
+	div $t0,$t2
+	mfhi $t2
+	jr $ra
+	
+	CheckPrime:
+	li $t3,2
+	div $t2,$t3
+	mfhi $t4
+	jr $ra
+	
+	EXIT: #program exit
