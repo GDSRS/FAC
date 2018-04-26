@@ -3,6 +3,15 @@
 	str2: .asciiz " elevado a "
 	str3: .asciiz " (mod "
 	str4: .asciiz ") eh "
+	errorMessage: .asciiz "O numero nao eh primo"
+
+# Variables Tracking 
+#	$t0 = store the base
+#	$t1 = store the exponent
+#	$t2 = store the mode
+#	$t3 = random register used with slt, sgt and branch instructions
+#	$t4 = store $t0 mod($t2) and the final result
+#	$t5 = only used on final print message
 
 .text
 	jal ReadNumbers
@@ -14,30 +23,33 @@
 	
 	move $t4,$t0
 	move $t5,$t1 # t5 only used on print
-
-#	jal CheckPrimeBruteForce
-
-	seq $t3,$t1,1
-	bne $t3,1,ExponentialLoop
 	
-	move $a0,$t0
-	move $a1,$t2
-	jal Mode
-	move $t4,$v0
-	j EXIT
+	li $t6,2
+	move $a0,$t2
+	j CheckPrimeBruteForce
+
+	ExponentialStart: # only to use in CheckPrimeBruteForce
+		seq $t3,$t1,1
+		bne $t3,1,ExponentialLoop
+	
+		move $a0,$t0
+		move $a1,$t2
+		jal Mode
+		move $t4,$v0
+		j EXIT
 
 	ExponentialLoop:
 		sgt $t3,$t1,1 # if(t1 > 0) then t3 = 1 else t3 = 0
 		beq $t3,$zero,FinalExponentMessage
 	
-		move $a0,$t4 #  Make t0 mod(t2)
+		move $a0,$t4 #  Make t4 mod(t2)
 		move $a1,$t2 #
 		jal Mode	 #
 		move $t4,$v0 #
 
 		mul $t4,$t4,$t0
 	
-		move $a0,$t4 #  Make t0 mod(t2)
+		move $a0,$t4 #  Make t4 mod(t2)
 		move $a1,$t2 #
 		jal Mode	 #
 		move $t4,$v0 #
@@ -90,16 +102,31 @@
 		mfhi $v0
 		jr $ra
 	
-	CheckPrimeBruteForce: # https://gist.github.com/CarterA/1587394
-		li $t3,2
-		div $t2,$t3
-		mfhi $t4
-		jr $ra
+	CheckPrimeBruteForce:# it's a loop # https://gist.github.com/CarterA/1587394
+		# 	remember $t6 starts with 2
+		slt $t3,$t6,$a0 # if i < n get out
+		bne $t3,1,ExponentialStart 
 	
+		move $a0,$a0 #  Make a0 mod(t6)
+		move $a1,$t6 #
+		jal Mode	 #
+	
+		seq $t3,$v0,$zero
+		bnez $t3,ErrorMessage # se der merda é essa linha aqui
+		
+		addi $t6,$t6,1
+		j CheckPrimeBruteForce
+		
 	Print:
 		move $v0,$a1
 		syscall
 		jr $ra
 		
+	ErrorMessage:
+		la $a0, errorMessage
+		li $a1,4
+		jal Print
+		j EXIT
+		
+		
 	EXIT: # program exit
-#	(https://stackoverflow.com/questions/5281779/c-how-to-test-easily-if-it-is-prime-number) 
