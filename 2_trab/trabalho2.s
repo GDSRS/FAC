@@ -12,6 +12,7 @@
 #	$t3 = random register used with slt, sgt and branch instructions
 #	$t4 = store $t0 mod($t2) and the final result
 #	$t5 = only used on final print message
+#	$t6 = store the CheckPrimeBruteForce loop counter
 
 .text
 	jal ReadNumbers
@@ -28,7 +29,7 @@
 	move $a0,$t2
 	j CheckPrimeBruteForce
 
-	ExponentialStart: # only to use in CheckPrimeBruteForce
+	ExponentialStart: # only to use in CheckPrimeBruteForce branch
 		seq $t3,$t1,1
 		bne $t3,1,ExponentialLoop
 	
@@ -102,17 +103,17 @@
 		mfhi $v0
 		jr $ra
 	
-	CheckPrimeBruteForce:# it's a loop # https://gist.github.com/CarterA/1587394
+	CheckPrimeBruteForce:# it's a loop 
 		# 	remember $t6 starts with 2
-		slt $t3,$t6,$a0 # if i < n get out
+		slt $t3,$t6,$a0 # if i < n it means that $a0 is a prime number
 		bne $t3,1,ExponentialStart 
 	
-		move $a0,$a0 #  Make a0 mod(t6)
+		# move $a0,$a0 #  Make a0 mod(t6)
 		move $a1,$t6 #
 		jal Mode	 #
 	
 		seq $t3,$v0,$zero
-		bnez $t3,ErrorMessage # se der merda é essa linha aqui
+		bnez $t3,ErrorMessage # if the remain of the division is equal zero, it is not a prime
 		
 		addi $t6,$t6,1
 		j CheckPrimeBruteForce
