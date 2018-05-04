@@ -15,29 +15,29 @@
 #	$t6 = store the CheckPrimeBruteForce loop counter
 
 .text
-	jal ReadNumbers
+	jal ReadNumbers # Read base
 	move $t0,$v0
-	jal ReadNumbers
+	jal ReadNumbers # Read exponential
 	move $t1,$v0
-	jal ReadNumbers
+	jal ReadNumbers # Read mod
 	move $t2,$v0
 	
-	move $t4,$t0
-	move $t5,$t1 # t5 only used on print
+	move $t4,$t0 # Attribute the base to #t4 so we can iterate over the loop
+	move $t5,$t1 # t5 only used on final message print
 	
-	li $t6,2
-	move $a0,$t2
+	li $t6,2 	  # Initiating $t6 with 2 for CheckPrimeBruteForce loop
+	move $a0,$t2  # Pass mod as a parameter to use on CheckPrimeBruteForce
 	j CheckPrimeBruteForce
 
 	ExponentialStart: # only to use in CheckPrimeBruteForce branch
-		seq $t3,$t1,1
-		bne $t3,1,ExponentialLoop
-	
-		move $a0,$t0
-		move $a1,$t2
-		jal Mode
-		move $t4,$v0
-		j EXIT
+		seq $t3,$t1,1				# 
+		bne $t3,1,ExponentialLoop   # 
+									# Verify if the exponent is 1	
+		move $a0,$t0				# if it is just make one mode and
+		move $a1,$t2				# end the program
+		jal Mode    				#
+		move $t4,$v0				#
+		j EXIT						#
 
 	ExponentialLoop:
 		sgt $t3,$t1,1 # if(t1 > 0) then t3 = 1 else t3 = 0
@@ -48,21 +48,22 @@
 		jal Mode	 #
 		move $t4,$v0 #
 
-		mul $t4,$t4,$t0
+		mul $t4,$t4,$t0 # $t4 = ($t4 mod($t2)) * $t0
 	
 		move $a0,$t4 #  Make t4 mod(t2)
 		move $a1,$t2 #
 		jal Mode	 #
 		move $t4,$v0 #
 	
-		subi $t1,$t1,1
+		subi $t1,$t1,1 # decrement the exponent by one
 	
 		j ExponentialLoop
 	
-	FinalExponentMessage:
+	FinalExponentMessage: # Print final success message
 		la $a0, str1
 		li $a1,4
 		jal Print
+		
 		move $a0, $t0
 		li $a1,1
 		jal Print	
@@ -93,37 +94,37 @@
 		
 		j EXIT
 	
-	ReadNumbers:
+	ReadNumbers: # read an integer and store in $v0
 		li $v0,5
 		syscall
 		jr $ra
 	
-	Mode:
+	Mode:	# make $a0 mod($a1) and store the result on $v0
 		div $a0,$a1
 		mfhi $v0
 		jr $ra
 	
 	CheckPrimeBruteForce:# it's a loop 
-		# 	remember $t6 starts with 2
-		slt $t3,$t6,$a0 # if i < n it means that $a0 is a prime number
-		bne $t3,1,ExponentialStart 
+								   # remember $t6 starts with 2
+		slt $t3,$t6,$a0 		   # if $t6 < $a0(mod) then $t3 = 1 and the CheckPrimeBruteForce continues
+		bne $t3,1,ExponentialStart # if $t3 == 0 it means that $a0 is a prime number, then go to ExponentialStart
 	
-		# move $a0,$a0 #  Make a0 mod(t6)
+					 #   a0 mod(t6)
 		move $a1,$t6 #
 		jal Mode	 #
 	
-		seq $t3,$v0,$zero
+		seq $t3,$v0,$zero     # if $v0 == 0 than $t3 == 1 and the loop stops
 		bnez $t3,ErrorMessage # if the remain of the division is equal zero, it is not a prime
 		
-		addi $t6,$t6,1
+		addi $t6,$t6,1		    # increment $t6 by one
 		j CheckPrimeBruteForce
 		
-	Print:
+	Print:			# Print whatever is on $a0. $a1 specifies what to print (number, string, ..)
 		move $v0,$a1
 		syscall
 		jr $ra
 		
-	ErrorMessage:
+	ErrorMessage: #Print error message
 		la $a0, errorMessage
 		li $a1,4
 		jal Print
