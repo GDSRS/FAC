@@ -30,24 +30,20 @@
 	j CheckPrimeBruteForce
 
 	ExponentialStart: # only to use in CheckPrimeBruteForce branch
-		seq $t3,$t1,1				# 
+		seq $t3,$t1,1				#
+									#
+		move $a0,$t0				# Make base mod(mode) and
+		move $a1,$t2				# verify if exponent is 1
+		jal Mode    				# if it is, show final message and
+		move $t4,$v0				# end the program
+
 		bne $t3,1,ExponentialLoop   # 
-									# Verify if the exponent is 1	
-		move $a0,$t0				# if it is just make one mode and
-		move $a1,$t2				# end the program
-		jal Mode    				#
-		move $t4,$v0				#
-		j EXIT						#
+		j FinalExponentMessage		#
 
 	ExponentialLoop:
 		sgt $t3,$t1,1 # if(t1 > 0) then t3 = 1 else t3 = 0
 		beq $t3,$zero,FinalExponentMessage
-	
-		move $a0,$t4 #  Make t4 mod(t2)
-		move $a1,$t2 #
-		jal Mode	 #
-		move $t4,$v0 #
-
+		
 		mul $t4,$t4,$t0 # $t4 = ($t4 mod($t2)) * $t0
 	
 		move $a0,$t4 #  Make t4 mod(t2)
