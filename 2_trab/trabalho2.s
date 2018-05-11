@@ -13,6 +13,7 @@
 #	$t4 = store $t0 mod($t2) and the final result
 #	$t5 = only used on final print message
 #	$t6 = store the CheckPrimeBruteForce loop counter
+#	$t7 = store t0 mod(t2)
 
 .text
 	jal ReadNumbers # Read base
@@ -36,6 +37,7 @@
 		move $a1,$t2				# verify if exponent is 1
 		jal Mode    				# if it is, show final message and
 		move $t4,$v0				# end the program
+		move $t7,$t4
 
 		bne $t3,1,ExponentialLoop   # 
 		j FinalExponentMessage		#
@@ -44,8 +46,8 @@
 		sgt $t3,$t1,1 # if(t1 > 0) then t3 = 1 else t3 = 0
 		beq $t3,$zero,FinalExponentMessage
 		
-		mul $t4,$t4,$t0 # $t4 = ($t4 mod($t2)) * $t0
-	
+		mul $t4,$t4,$t7 # $t4 = ($t4 mod($t2)) * ($t0 mod($t2))
+
 		move $a0,$t4 #  Make t4 mod(t2)
 		move $a1,$t2 #
 		jal Mode	 #
