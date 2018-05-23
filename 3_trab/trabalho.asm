@@ -2,6 +2,8 @@
 	guess: .float 0.5
 	three: .float 3.0
 	zero: .float 0.0
+	str1: .asciiz "A raiz cubica eh "
+	str2: .asciiz ". O erro eh menor que "
 .text
 	jal ReadNumbers
 	mov.s $f1,$f0 # $f1 has the target value
@@ -33,7 +35,7 @@
 	
 		c.eq.s $f2,$f6
 		
-		bc1t EXIT
+		bc1t Error
 		mov.s $f2,$f6
 		j Newton_Raphson
 	
@@ -47,5 +49,27 @@
 		li $v0,6
 		syscall
 		jr $ra	
+	
+	Error:
+		mov.s $f7,$f6
+		mov.s $f0,$f6
+		li $a0,3
+		jal Power
+		sub.s $f7,$f1,$f0	
+		
+	PrintFinalMessage:
+		li $v0,4
+		la $a0,str1
+		syscall
+		li $v0,2
+		mov.s $f12,$f6
+		syscall
+		
+		li $v0,4
+		la $a0,str2
+		syscall		
+		li $v0,2
+		mov.s $f12,$f7
+		syscall
 		
 	EXIT:
