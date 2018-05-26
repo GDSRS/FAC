@@ -4,7 +4,6 @@
 	zero: .double 0.0
 	str1: .asciiz "A raiz cubica eh "
 	str2: .asciiz ". O erro eh menor que "
-	newLine: .asciiz "\n"
 	errorLimit: .double 0.0000000000001
 	
 	# The parameters registers are f0 and f14 (replacing a0 and a1 from integer operations)
