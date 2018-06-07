@@ -1,7 +1,6 @@
 .data
 	guess: .double 0.5
 	three: .double 3.0
-	zero: .double 0.0
 	str1: .asciiz "A raiz cubica eh "
 	str2: .asciiz ". O erro eh menor que "
 	errorLimit: .double 0.0000000000001
@@ -48,7 +47,7 @@
 		
 		bc1t PrintFinalMessage
 		
-		mov.d $f4,$f6 # f2 = f4  # f3 = f6
+		mov.d $f4,$f6 
 		j Newton_Raphson
 	
 	Power: # $f0 and $f14 need to be loaded with the parameter
@@ -64,8 +63,8 @@
 	
 	Error:
 		mov.d $f14,$f6	# performs f6³(f6 being the result) and keeps the value in f0
-		mov.d $f0,$f6 
-		li $a0,3
+		mov.d $f0,$f6 	#
+		li $a0,3		#
 		
 		subi $sp,$sp,4 # store last $ra
 		sw $ra,0($sp)  #
@@ -84,14 +83,14 @@
 		la $a0,str1
 		syscall
 		li $v0,3
-		mov.d $f12,$f6 # f3 = f6
+		mov.d $f12,$f6
 		syscall
 		
 		li $v0,4
 		la $a0,str2
 		syscall		
 		li $v0,3
-		abs.d $f12,$f14 # f7 = f14
+		mov.d $f12,$f14
 		syscall
 		
 	EXIT:
